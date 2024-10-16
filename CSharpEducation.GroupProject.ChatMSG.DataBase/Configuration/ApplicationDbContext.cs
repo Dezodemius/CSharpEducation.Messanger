@@ -38,6 +38,10 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase.Configuration
         entity.HasMany(m => m.Messages)
               .WithOne(c => c.Chat)
               .HasForeignKey(c => c.ChatId);
+        
+        entity.HasMany(c => c.Users)
+          .WithMany(u => u.Chats)
+          .UsingEntity(j => j.ToTable("UserChats"));
       });
 
       //TODO в отдельном классе

@@ -14,5 +14,10 @@ namespace CSharpEducation.GroupProject.ChatMSG.Core.Entities
     /// Коллекция сообщений, который отправил этот пользователь.
     /// </summary>
     public ICollection<MessageEntity> Messages { get; }
+
+    /// <summary>
+    /// Коллекция чатов, в которых состоит пользователь.
+    /// </summary>
+    public ICollection<ChatEntity> Chats { get; set; }
   }
 }

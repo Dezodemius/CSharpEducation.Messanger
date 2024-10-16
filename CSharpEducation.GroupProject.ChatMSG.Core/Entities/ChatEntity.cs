@@ -17,6 +17,11 @@ namespace CSharpEducation.GroupProject.ChatMSG.Core.Entities
     /// <summary>
     /// Коллекция сообщений чата.
     /// </summary>
-    public ICollection<MessageEntity> Messages { get; set; } 
+    public ICollection<MessageEntity> Messages { get; set; }
+
+    /// <summary>
+    /// Коллекция пользователей.
+    /// </summary>
+    public ICollection<UserEntity> Users { get; set; }
   }
 }

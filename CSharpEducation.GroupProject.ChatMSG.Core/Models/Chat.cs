@@ -14,5 +14,10 @@
     /// Имя чата.
     /// </summary>
     public string Name { get; set; }
+    
+    /// <summary>
+    /// Пользователи чата.
+    /// </summary>
+    public ICollection<User> Users { get; set; }
   }
 }

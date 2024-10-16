@@ -18,7 +18,7 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     public async Task<ActionResult<List<ChatResponse>>> GetAll()
     {
       var chats = await chatService.GetAll();
-      var response = chats.Select(c => new ChatResponse(c.Id, c.Name));
+      var response = chats.Select(c => new ChatResponse(c.Id, c.Name, c.Users.ToList()));
       return Ok(response);
     }
 
@@ -26,7 +26,7 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     [HttpPost]
     public async Task<ActionResult<ChatResponse>> Create([FromBody] ChatRequest chatRequest)
     {
-      Chat newChat = new Chat() { Name  = chatRequest.Name };
+      Chat newChat = new Chat() { Name = chatRequest.Name };
       await chatService.CreateChat(newChat);
       return Ok(newChat);
     }
@@ -37,6 +37,14 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     {
       Chat newChat = await chatService.GetChat(id);
       return Ok(newChat);
+    }
+
+    [Authorize]
+    [HttpGet("GetChatUsers/{id}")]
+    public async Task<ActionResult<List<User>>> GetAllChatUsers([FromRoute] int id)
+    {
+      var allChatUsers = await chatService.GetAllChatUsers(id);
+      return Ok(allChatUsers);
     }
 
     public ChatsController(IChatService service, IMessageService messageService)
