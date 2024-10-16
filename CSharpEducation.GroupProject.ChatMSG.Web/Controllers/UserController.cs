@@ -56,12 +56,12 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     }
 
     [HttpGet("GetAllUsers")]
-    public IEnumerable GetAllUsers()
+    public async Task<ActionResult> GetAllUsers()
     {
-      if (userManager.Users.Count() > 0)
-        return userManager.Users;
-      else
-        throw new Exception("Список пользвователей пуст");
+      if (userManager.Users.Any())
+        return Ok(userManager.Users.ToList());
+      
+      return new EmptyResult();
     }
 
     public UserController(UserManager<UserEntity> userManager, IUserStore<UserEntity> userStore, SignInManager<UserEntity> signInManager)
