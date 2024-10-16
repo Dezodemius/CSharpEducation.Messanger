@@ -55,11 +55,6 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase
       await _appDbContext.SaveChangesAsync();
     }
 
-    /// <summary>
-    /// Получает список пользователей для чата.
-    /// </summary>
-    /// <param name="chatId">Идентификатор чата</param>
-    /// <returns>Список пользователей</returns>
     public async Task<List<UserEntity>> GetChatUsers(int chatId)
     {
       var chatWithUsers = await _dbSet
@@ -72,6 +67,21 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase
       }
 
       return chatWithUsers.Users.ToList();
+    }
+
+    public async Task<List<ChatEntity>> GetUserChats(string userId)
+    {
+      var user = await _appDbContext.Users
+        .Include(u => u.Chats)
+        .ThenInclude(c => c.Users)
+        .FirstOrDefaultAsync(u => u.Id == userId);
+
+      if (user == null)
+      {
+        return new List<ChatEntity>();
+      }
+
+      return user.Chats.ToList();
     }
 
     public ChatRepository(ApplicationDbContext appDbContext)
