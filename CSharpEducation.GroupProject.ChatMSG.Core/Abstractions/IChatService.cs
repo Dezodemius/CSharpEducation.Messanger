@@ -25,7 +25,7 @@ namespace CSharpEducation.GroupProject.ChatMSG.Core.Abstractions
     /// </summary>
     /// <param name="chat"></param>
     /// <returns></returns>
-    Task CreateChat(Chat chat);
+    Task<Chat> CreateChat(Chat chat, List<string> userIds);
     
     /// <summary>
     /// Получает всех пользователей чата

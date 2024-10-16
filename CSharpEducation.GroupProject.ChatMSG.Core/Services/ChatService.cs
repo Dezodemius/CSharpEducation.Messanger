@@ -23,10 +23,29 @@ namespace CSharpEducation.GroupProject.ChatMSG.Core.Services
       return new Chat() { Id = chat.Id, Name = chat.Name };
     }
 
-    public async Task CreateChat(Chat chat)
+    public async Task<Chat> CreateChat(Chat chat, List<string> userIds)
     {
-      ChatEntity newChat = new ChatEntity() { Name = chat.Name };
-      _chatRepository.Add(newChat);
+      var users = await _chatRepository.GetUsersByIds(userIds);
+
+      if (users.Count != userIds.Count)
+      {
+        throw new Exception("Some users were not found.");
+      }
+
+      ChatEntity newChat = new ChatEntity
+      {
+        Name = chat.Name,
+        Users = users
+      };
+
+      var chatEntity = await _chatRepository.Add(newChat);
+
+      return new Chat
+      {
+        Id = chatEntity.Id, Name = chatEntity.Name, Users = chatEntity.Users.Select(
+          u => new User() { Id = u.Id, Name = u.UserName }
+        ).ToList()
+      };
     }
 
     public async Task<List<User>> GetAllChatUsers(int chatId)

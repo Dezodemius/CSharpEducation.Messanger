@@ -84,6 +84,13 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase
       return user.Chats.ToList();
     }
 
+    public async Task<List<UserEntity>> GetUsersByIds(List<string> userIds)
+    {
+      return await _appDbContext.Users
+        .Where(u => userIds.Contains(u.Id))
+        .ToListAsync();
+    }
+
     public ChatRepository(ApplicationDbContext appDbContext)
     {
       _appDbContext = appDbContext;

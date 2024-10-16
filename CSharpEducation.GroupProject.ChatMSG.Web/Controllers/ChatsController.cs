@@ -23,11 +23,21 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ChatResponse>> Create([FromBody] ChatRequest chatRequest)
+    public async Task<ActionResult<ChatResponse>> Create([FromBody] CreateChatRequest chatRequest)
     {
-      Chat newChat = new Chat() { Name = chatRequest.Name };
-      await chatService.CreateChat(newChat);
-      return Ok(newChat);
+      if (chatRequest == null || string.IsNullOrEmpty(chatRequest.Name) || chatRequest.UserIds == null ||
+          !chatRequest.UserIds.Any())
+      {
+        return BadRequest("Invalid chat data or users.");
+      }
+
+      Chat newChat = new Chat
+      {
+        Name = chatRequest.Name
+      };
+
+      var chat = await chatService.CreateChat(newChat, chatRequest.UserIds);
+      return Ok(new ChatResponse(chat.Id, chat.Name, chat.Users.ToList()));
     }
 
     [Authorize]

@@ -18,4 +18,11 @@ public interface IChatRepository<T> : IRepository<T> where T : BaseEntity
   /// <param name="userId">Идентификатор пользователя</param>
   /// <returns>Список чатов пользователя</returns>
   Task<List<ChatEntity>> GetUserChats(string userId);
+  
+  /// <summary>
+  /// Получает список пользователей по идентификаторам.
+  /// </summary>
+  /// <param name="userIds">Список идентификаторов пользователей</param>
+  /// <returns>Список пользователей</returns>
+  Task<List<UserEntity>> GetUsersByIds(List<string> userIds);
 }
