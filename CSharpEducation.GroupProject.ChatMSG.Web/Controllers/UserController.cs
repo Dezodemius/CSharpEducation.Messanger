@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 
 namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
@@ -52,6 +53,15 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
       }
 
       return TypedResults.Empty;
+    }
+
+    [HttpGet("GetAllUsers")]
+    public IEnumerable GetAllUsers()
+    {
+      if (userManager.Users.Count() > 0)
+        return userManager.Users;
+      else
+        throw new Exception("Список пользвователей пуст");
     }
 
     public UserController(UserManager<UserEntity> userManager, IUserStore<UserEntity> userStore, SignInManager<UserEntity> signInManager)
