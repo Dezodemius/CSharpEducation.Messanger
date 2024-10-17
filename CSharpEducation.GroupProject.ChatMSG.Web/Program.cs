@@ -1,4 +1,3 @@
-
 using CSharpEducation.GroupProject.ChatMSG.Application.Abstractions;
 using CSharpEducation.GroupProject.ChatMSG.Core.Abstractions;
 using CSharpEducation.GroupProject.ChatMSG.Core.Entities;
@@ -18,7 +17,7 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web
 
       // Add services to the container.
 
-      builder.Services.AddScoped<IRepository<ChatEntity>, ChatRepository<ChatEntity>>();
+      builder.Services.AddScoped<IChatRepository<ChatEntity>, ChatRepository<ChatEntity>>();
       builder.Services.AddScoped<IRepository<MessageEntity>, MessageRepository<MessageEntity>>();
       builder.Services.AddScoped<IChatService, ChatService>();
       builder.Services.AddScoped<IMessageService, MessageService>();
@@ -27,21 +26,21 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web
       builder.Services.AddSwaggerGen();
 
       builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
-      {
-        options.Password.RequireDigit = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequiredLength = 6;
-        options.User.RequireUniqueEmail = false;
-      })
-       .AddEntityFrameworkStores<ApplicationDbContext>()
-       .AddDefaultTokenProviders()
-       .AddApiEndpoints();
+        {
+          options.Password.RequireDigit = false;
+          options.Password.RequireLowercase = false;
+          options.Password.RequireUppercase = false;
+          options.Password.RequireNonAlphanumeric = false;
+          options.Password.RequiredLength = 6;
+          options.User.RequireUniqueEmail = false;
+        })
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders()
+        .AddApiEndpoints();
 
       builder.Services.AddDbContext<ApplicationDbContext>(options =>
-      options.UseNpgsql(
-        builder.Configuration.GetConnectionString("ConnectionString")));
+        options.UseNpgsql(
+          builder.Configuration.GetConnectionString("ConnectionString")));
       var app = builder.Build();
 
       if (app.Environment.IsDevelopment())

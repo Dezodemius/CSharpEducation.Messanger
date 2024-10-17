@@ -1,5 +1,4 @@
 ﻿using CSharpEducation.GroupProject.ChatMSG.Core.Abstractions;
-using CSharpEducation.GroupProject.ChatMSG.Core.Entities;
 using CSharpEducation.GroupProject.ChatMSG.Core.Models;
 using CSharpEducation.GroupProject.ChatMSG.Web.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -18,17 +17,27 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     public async Task<ActionResult<List<ChatResponse>>> GetAll()
     {
       var chats = await chatService.GetAll();
-      var response = chats.Select(c => new ChatResponse(c.Id, c.Name));
+      var response = chats.Select(c => new ChatResponse(c.Id, c.Name, c.Users.ToList()));
       return Ok(response);
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ChatResponse>> Create([FromBody] ChatRequest chatRequest)
+    public async Task<ActionResult<ChatResponse>> Create([FromBody] CreateChatRequest chatRequest)
     {
-      Chat newChat = new Chat() { Name  = chatRequest.Name };
-      await chatService.CreateChat(newChat);
-      return Ok(newChat);
+      if (chatRequest == null || string.IsNullOrEmpty(chatRequest.Name) || chatRequest.UserIds == null ||
+          !chatRequest.UserIds.Any())
+      {
+        return BadRequest("Invalid chat data or users.");
+      }
+
+      Chat newChat = new Chat
+      {
+        Name = chatRequest.Name
+      };
+
+      var chat = await chatService.CreateChat(newChat, chatRequest.UserIds);
+      return Ok(new ChatResponse(chat.Id, chat.Name, chat.Users.ToList()));
     }
 
     [Authorize]
@@ -37,6 +46,22 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     {
       Chat newChat = await chatService.GetChat(id);
       return Ok(newChat);
+    }
+
+    [Authorize]
+    [HttpGet("ChatUsers/{id}")]
+    public async Task<ActionResult<List<User>>> GetAllChatUsers([FromRoute] int id)
+    {
+      var allChatUsers = await chatService.GetAllChatUsers(id);
+      return Ok(allChatUsers);
+    }
+
+    [Authorize]
+    [HttpGet("UserChats/{userId}")]
+    public async Task<ActionResult<List<Chat>>> GetAllUserChats([FromRoute] string userId)
+    {
+      var allUserChats = await chatService.GetAllUserChats(userId);
+      return Ok(allUserChats);
     }
 
     public ChatsController(IChatService service, IMessageService messageService)

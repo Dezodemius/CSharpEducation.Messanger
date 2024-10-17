@@ -1,11 +1,12 @@
 ﻿using CSharpEducation.GroupProject.ChatMSG.Application.Abstractions;
+using CSharpEducation.GroupProject.ChatMSG.Core.Abstractions;
 using CSharpEducation.GroupProject.ChatMSG.Core.Entities;
 using CSharpEducation.GroupProject.ChatMSG.DataBase.Configuration;
 using Microsoft.EntityFrameworkCore;
 
 namespace CSharpEducation.GroupProject.ChatMSG.DataBase
 {
-  public class ChatRepository<T> : IRepository<T> where T : ChatEntity
+  public class ChatRepository<T> : IChatRepository<T> where T : ChatEntity
   {
     private readonly ApplicationDbContext _appDbContext;
     private readonly DbSet<T> _dbSet;
@@ -52,6 +53,42 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase
     {
       _dbSet.Remove(entity);
       await _appDbContext.SaveChangesAsync();
+    }
+
+    public async Task<List<UserEntity>> GetChatUsers(int chatId)
+    {
+      var chatWithUsers = await _dbSet
+        .Include(c => c.Users)
+        .FirstOrDefaultAsync(c => c.Id == chatId);
+
+      if (chatWithUsers == null)
+      {
+        return new List<UserEntity>();
+      }
+
+      return chatWithUsers.Users.ToList();
+    }
+
+    public async Task<List<ChatEntity>> GetUserChats(string userId)
+    {
+      var user = await _appDbContext.Users
+        .Include(u => u.Chats)
+        .ThenInclude(c => c.Users)
+        .FirstOrDefaultAsync(u => u.Id == userId);
+
+      if (user == null)
+      {
+        return new List<ChatEntity>();
+      }
+
+      return user.Chats.ToList();
+    }
+
+    public async Task<List<UserEntity>> GetUsersByIds(List<string> userIds)
+    {
+      return await _appDbContext.Users
+        .Where(u => userIds.Contains(u.Id))
+        .ToListAsync();
     }
 
     public ChatRepository(ApplicationDbContext appDbContext)
