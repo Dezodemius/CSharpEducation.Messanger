@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 
 
 namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
@@ -52,6 +53,15 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
       }
 
       return TypedResults.Empty;
+    }
+
+    [HttpGet("GetAllUsers")]
+    public async Task<ActionResult> GetAllUsers()
+    {
+      if (userManager.Users.Any())
+        return Ok(userManager.Users.ToList());
+      
+      return new EmptyResult();
     }
 
     public UserController(UserManager<UserEntity> userManager, IUserStore<UserEntity> userStore, SignInManager<UserEntity> signInManager)
