@@ -18,21 +18,17 @@ function register() {
     const registerPassword = document.getElementById('register-password');
 
     const data = {
-        "userName": registerUsername.value,
-        "password": registerPassword.value,
+        "userName": registerUsername.value, "password": registerPassword.value,
     }
     const response = fetch('/User', {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        }, body: JSON.stringify(data),
     }).then(r => {
         if (r.ok) {
             alert('Вы зарегестрированы');
             showLoginForm();
-        }
-        else alert('Произошла ошибка');
+        } else alert('Произошла ошибка');
     });
 }
 
@@ -41,26 +37,32 @@ function login() {
     const loginPassword = document.getElementById('login-password');
 
     const data = {
-        "userName": loginUsername.value,
-        "password": loginPassword.value,
-    }
+        userName: loginUsername.value, password: loginPassword.value
+    };
+
     fetch('/User/login', {
-        method: "POST",
-        headers: {
+        method: "POST", headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        }, body: JSON.stringify(data),
     })
         .then(response => {
             if (response.ok) {
-                alert('Вы вошли в систему');
-                document.querySelector('.auth').style.display = 'none';
-                document.querySelector('.messenger').style.display = 'flex';
+                return response.json();
             } else {
-                alert('Произошла ошибка при входе');
+                throw new Error('Ошибка при входе');
             }
         })
-        .catch(error => console.error('Ошибка при входе:', error));
+        .then(result => {
+            alert('Вы вошли в систему');
+            document.querySelector('.auth').style.display = 'none';
+            document.querySelector('.messenger').style.display = 'flex';
+
+            currentUserId = result.userId;
+        })
+        .catch(error => {
+            console.error('Ошибка при входе:', error);
+            alert('Произошла ошибка при входе');
+        });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -71,9 +73,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatNameInput = document.getElementById("chat-name-input");
     let currentChatId = null;
 
+    function loadUsers() {
+        fetch('/User/GetAllUsers/')
+            .then(response => response.json())
+            .then(data => {
+                const userList = document.getElementById("userList");
+                userList.innerHTML = '';
+
+                data.forEach(user => {
+                    const li = document.createElement('li');
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = user.id; // Используем ID пользователя как значение чекбокса
+
+                    const label = document.createElement('label');
+                    label.for = user.id;
+                    label.innerText = user.userName;
+
+
+                    li.appendChild(checkbox);
+                    li.appendChild(label);
+
+                    userList.appendChild(li);
+                });
+            })
+            .catch(error => console.error('Ошибка при загрузке пользователей:', error));
+    }
 
     function loadChats() {
-        fetch('/Chats')
+        fetch('/Chats/UserChats/' + currentUserId)
             .then(response => response.json())
             .then(data => {
                 const chatList = document.getElementById("chatList");
@@ -87,6 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
                         console.log(`Chat clicked: ${chat.id}`);
                         currentChatId = chat.id;
                         loadMessages(currentChatId);
+
+                        let chatTitle = document.getElementById("chatTitle");
+                        chatTitle.innerHTML = '';
+                        chatTitle.innerText = chat.name;
+
+                        let chatUsers = document.getElementById("chatUserList");
+                        chatUsers.innerHTML = '';
+                        for (let i = 0; i < chat.users.length; i++) {
+                            chatUsers.appendChild(document.createTextNode(chat.users[i].name + " "));
+                        }
                     });
                     chatList.appendChild(chatTab);
                 });
@@ -100,16 +138,24 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const selectedUsers = [];
+        document.querySelectorAll('#userList input[type="checkbox"]:checked').forEach(checkbox => {
+            selectedUsers.push(checkbox.value);
+        });
+
+        selectedUsers.push(currentUserId);
+
+        const requestBody = {
+            name: chatName, userIds: selectedUsers
+        };
+
         fetch('/Chats', {
-            method: "POST",
-            headers: {
+            method: "POST", headers: {
                 "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ name: chatName }),
+            }, body: JSON.stringify(requestBody),
         })
             .then(response => response.json())
             .then(data => {
-
                 const chatTab = document.createElement("div");
                 chatTab.textContent = data.name;
                 chatTab.addEventListener("click", () => {
@@ -124,7 +170,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadMessages(chatId) {
-        if (!chatId) { return; }
+        if (!chatId) {
+            return;
+        }
         fetch(`/Messages/${currentChatId}`)
             .then(response => response.json())
             .then(data => {
@@ -144,16 +192,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const messageData = {
-            chatId: currentChatId,
-            content: messageInput.value,
+            chatId: currentChatId, content: messageInput.value,
         };
 
         fetch('/Messages', {
-            method: "POST",
-            headers: {
+            method: "POST", headers: {
                 "Content-Type": "application/json",
-            },
-            body: JSON.stringify(messageData),
+            }, body: JSON.stringify(messageData),
         })
             .then(response => response.json())
             .then(data => {
@@ -167,6 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     loadChats();
+    loadUsers();
     setInterval(() => loadMessages(currentChatId), 2500);
     setInterval(() => loadChats(), 2500);
 

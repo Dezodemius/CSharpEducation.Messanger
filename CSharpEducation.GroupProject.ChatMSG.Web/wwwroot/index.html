@@ -10,53 +10,58 @@
 
 <body>
 
-    <div class="auth">
-        <div class="auth-container">
+<div class="auth">
+    <div class="auth-container">
 
-            <div class="auth-form" id="login-form">
-                <h2>Вход</h2>
-                <input type="text" id="login-username" placeholder="Никнейм">
-                <input type="password" id="login-password" placeholder="Пароль">
-                <br>
-                <button onclick="login()">Войти</button>
-                <p>Нет аккаунта? <a href="#" onclick="showRegisterForm()">Регистрация</a></p>
-            </div>
+        <div class="auth-form" id="login-form">
+            <h2>Вход</h2>
+            <input type="text" id="login-username" placeholder="Никнейм">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <br>
+            <button onclick="login()">Войти</button>
+            <p>Нет аккаунта? <a href="#" onclick="showRegisterForm()">Регистрация</a></p>
+        </div>
 
-            <div class="auth-form" id="register-form" style="display: none;">
-                <h2>Регистрация</h2>
-                <input type="text" id="register-username" placeholder="Никнейм">
-                <input type="password" id="register-password" placeholder="Пароль">
-                <button onclick="register()">Зарегистрироваться</button>
-                <p>Уже есть аккаунт? <a href="#" onclick="showLoginForm()">Вход</a></p>
-            </div>
+        <div class="auth-form" id="register-form" style="display: none;">
+            <h2>Регистрация</h2>
+            <input type="text" id="register-username" placeholder="Никнейм">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <button onclick="register()">Зарегистрироваться</button>
+            <p>Уже есть аккаунт? <a href="#" onclick="showLoginForm()">Вход</a></p>
+        </div>
+
+    </div>
+</div>
+
+<div class="messenger" style="display: none;">
+    <div class="chat-list">
+        <input type="text" id="chat-name-input" placeholder="Название чата">
+        <button id="createChatButton">Создать чат</button>
+        <div>Выберите пользователей для создания беседы.</div>
+        <ul id="userList"></ul>
+        <div id="chatList" class="chat-list">
 
         </div>
     </div>
+    <div class="chat-window">
+        <h1 id="chatTitle"></h1>
+        
+        <div id="chatUserList"></div>
+        
+        <ul id="messageList" class="chat-messages">
 
-    <div class="messenger" style="display: none;">
-        <div class="chat-list">
-            <input type="text" id="chat-name-input" placeholder="Название чата">
-            <button id="createChatButton">Создать чат</button>
-            <div id="chatList" class="chat-list">
-                
-            </div>
+        </ul>
+        <div id="chat-messages" class="chat-messages">
+
         </div>
-
-        <div class="chat-window">
-            <ul id="messageList" class="chat-messages">
-               
-            </ul>
-            <div id="chat-messages" class="chat-messages">
-                
-            </div>
-            <div class="chat-input">
-                <input type="text" id="messageInput" placeholder="Введите сообщение">
-                <button id="sendButton">Отправить</button>
-            </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Введите сообщение">
+            <button id="sendButton">Отправить</button>
         </div>
     </div>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 
 </html>
