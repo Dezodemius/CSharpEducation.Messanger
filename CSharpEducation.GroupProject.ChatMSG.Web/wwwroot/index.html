@@ -39,15 +39,41 @@
     <div class="chat-list p-2">
         <div class="input-group mb-3">
             <input type="text" id="chat-name-input" class="form-control" placeholder="Название чата">
-            <button id="createChatButton" class="btn btn-outline-secondary">Создать чат</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#Modal1">
+                Участники
+                </button>
+                
+            <button id="createChatButton" class="btn btn-primary">Создать чат</button>
+            
         </div>
-        <div>Выберите пользователей для создания беседы:</div>
+
+        
+        
         <div id="userList" class="ms-3"></div>
 
         <div id="chatList" class="chat-list">
 
         </div>
     </div>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="Modal1" tabindex="-1" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="ModalLabel">Выберите пользователей для создания беседы</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="userList2">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Ок</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="chat-window">
         <div class="container text-center">
             <h1 id="chatTitle"></h1>
@@ -60,7 +86,7 @@
         <div id="chat-messages" class="chat-messages">
 
         </div>
-        <div class="chat-input">
+        <div class="chat-input gap-2">
             <input type="text" id="messageInput" placeholder="Введите сообщение">
             <button id="sendButton" class="btn btn-primary">Отправить</button>
         </div>

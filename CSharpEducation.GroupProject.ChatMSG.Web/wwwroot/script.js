@@ -66,17 +66,44 @@ function login() {
         });
 }
 
+const chBoxes =
+    document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
+const dpBtn =
+    document.getElementById('multiSelectDropdown');
+let mySelectedListItems = [];
+
+function handleCB() {
+    mySelectedListItems = [];
+    let mySelectedListItemsText = '';
+
+    chBoxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            mySelectedListItems.push(checkbox.value);
+            mySelectedListItemsText += checkbox.value + ', ';
+        }
+    });
+
+    dpBtn.innerText =
+        mySelectedListItems.length > 0
+            ? mySelectedListItemsText.slice(0, -2) : 'Select';
+}
+
+chBoxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', handleCB);
+});
+
 function loadUsers() {
     fetch('/User/GetAllUsers/')
         .then(response => response.json())
         .then(data => {
-            const userList = document.getElementById("userList");
-            userList.innerHTML = '';
+            const userList = document.getElementById("userList2");
+            // userList.innerHTML = '';
 
             data.forEach(user => {
                 if (user.id !== currentUserId) {
                     const div = document.createElement('div');
                     div.className = 'form-check';
+                    
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.value = user.id;
@@ -86,16 +113,24 @@ function loadUsers() {
                     label.for = user.id;
                     label.innerText = user.userName;
                     label.className = 'form-check-label';
-
+                                        
                     div.appendChild(checkbox);
                     div.appendChild(label);
-
+                    
                     userList.appendChild(div);
                 }
             });
         })
         .catch(error => console.error('Ошибка при загрузке пользователей:', error));
 }
+
+const myModal = document.getElementById('myModal')
+const myInput = document.getElementById('myInput')
+
+myModal.addEventListener('shown.bs.modal', () => {
+    myInput.focus()
+})
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const chatList = document.getElementById("chatList");
