@@ -25,4 +25,12 @@ public interface IChatRepository<T> : IRepository<T> where T : BaseEntity
   /// <param name="userIds">Список идентификаторов пользователей</param>
   /// <returns>Список пользователей</returns>
   Task<List<UserEntity>> GetUsersByIds(List<string> userIds);
+  
+  /// <summary>
+  /// Удаляет пользователя из чата.
+  /// </summary>
+  /// <param name="chat">Сущность чата</param>
+  /// <param name="user">Сущность пользователя</param>
+  /// <returns>Результат удаления</returns>
+  Task RemoveUserFromChat(ChatEntity chat, UserEntity user);
 }

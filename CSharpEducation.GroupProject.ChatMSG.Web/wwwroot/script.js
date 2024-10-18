@@ -58,6 +58,7 @@ function login() {
             document.querySelector('.messenger').style.display = 'flex';
 
             currentUserId = result.userId;
+            loadUsers();
         })
         .catch(error => {
             console.error('Ошибка при входе:', error);
@@ -65,22 +66,15 @@ function login() {
         });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const chatList = document.getElementById("chatList");
-    const messageList = document.getElementById("messageList");
-    const messageInput = document.getElementById("messageInput");
-    const sendButton = document.getElementById("sendButton");
-    const chatNameInput = document.getElementById("chat-name-input");
-    let currentChatId = null;
+function loadUsers() {
+    fetch('/User/GetAllUsers/')
+        .then(response => response.json())
+        .then(data => {
+            const userList = document.getElementById("userList");
+            userList.innerHTML = '';
 
-    function loadUsers() {
-        fetch('/User/GetAllUsers/')
-            .then(response => response.json())
-            .then(data => {
-                const userList = document.getElementById("userList");
-                userList.innerHTML = '';
-
-                data.forEach(user => {
+            data.forEach(user => {
+                if (user.id !== currentUserId) {
                     const div = document.createElement('div');
                     div.className = 'form-check';
                     const checkbox = document.createElement('input');
@@ -97,10 +91,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     div.appendChild(label);
 
                     userList.appendChild(div);
-                });
-            })
-            .catch(error => console.error('Ошибка при загрузке пользователей:', error));
-    }
+                }
+            });
+        })
+        .catch(error => console.error('Ошибка при загрузке пользователей:', error));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const chatList = document.getElementById("chatList");
+    const messageList = document.getElementById("messageList");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const chatNameInput = document.getElementById("chat-name-input");
+    let currentChatId = null;
 
     function loadChats() {
         fetch('/Chats/UserChats/' + currentUserId)
@@ -110,8 +113,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 chatList.innerHTML = '';
                 data.forEach(chat => {
                     const chatTab = document.createElement("div");
-                    chatTab.textContent = chat.name;
+                    chatTab.innerHTML = `<p>${chat.name}</p>`;
                     chatTab.classList.add('chat-tab');
+
+                    const leaveButton = document.createElement("button");
+                    leaveButton.textContent = "Выйти";
+                    leaveButton.classList.add('leave-chat-button');
+                    leaveButton.classList.add('btn');
+                    leaveButton.classList.add('btn-danger');
+                    leaveButton.addEventListener("click", (event) => {
+                        event.stopPropagation();
+                        leaveChat(chat.id);
+                    });
+                    chatTab.appendChild(leaveButton);
 
                     chatTab.addEventListener("click", () => {
                         console.log(`Chat clicked: ${chat.id}`);
@@ -132,6 +146,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             })
             .catch(error => console.error('Ошибка при загрузке чатов:', error));
+    }
+
+    function leaveChat(chatId) {
+        fetch(`/Chats/RemoveUser/${chatId}/${currentUserId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Успешно вышли из чата:', chatId);
+                    loadChats();
+                } else {
+                    console.error('Ошибка при выходе из чата:', response.status);
+                }
+            })
+            .catch(error => console.error('Ошибка при выходе из чата:', error));
     }
 
     function createChat() {
@@ -214,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     loadChats();
-    loadUsers();
+    //loadUsers();
     setInterval(() => loadMessages(currentChatId), 2500);
     setInterval(() => loadChats(), 2500);
 

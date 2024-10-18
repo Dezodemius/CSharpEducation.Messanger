@@ -66,6 +66,18 @@ namespace CSharpEducation.GroupProject.ChatMSG.Core.Services
         }).ToList();
     }
 
+    public async Task<bool> RemoveUserFromChatAsync(int chatId, string userId)
+    {
+      var chat = await _chatRepository.Get(chatId);
+      if (chat == null) return false;
+
+      var user = _chatRepository.GetChatUsers(chatId).Result.FirstOrDefault(u => u.Id == userId);
+
+      await _chatRepository.RemoveUserFromChat(chat, user);
+
+      return true;
+    }
+
     public ChatService(IChatRepository<ChatEntity> repository)
     {
       _chatRepository = repository;
