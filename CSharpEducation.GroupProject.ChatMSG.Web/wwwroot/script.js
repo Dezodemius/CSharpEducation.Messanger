@@ -81,20 +81,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 userList.innerHTML = '';
 
                 data.forEach(user => {
-                    const li = document.createElement('li');
+                    const div = document.createElement('div');
+                    div.className = 'form-check';
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
-                    checkbox.value = user.id; // Используем ID пользователя как значение чекбокса
+                    checkbox.value = user.id;
+                    checkbox.className = 'form-check-input';
 
                     const label = document.createElement('label');
                     label.for = user.id;
                     label.innerText = user.userName;
+                    label.className = 'form-check-label';
 
+                    div.appendChild(checkbox);
+                    div.appendChild(label);
 
-                    li.appendChild(checkbox);
-                    li.appendChild(label);
-
-                    userList.appendChild(li);
+                    userList.appendChild(div);
                 });
             })
             .catch(error => console.error('Ошибка при загрузке пользователей:', error));
