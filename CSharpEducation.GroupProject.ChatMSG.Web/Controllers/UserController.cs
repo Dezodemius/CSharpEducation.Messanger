@@ -10,9 +10,9 @@ using System.Collections;
 
 namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
 {
-    //лобавить разлогинивание 
+  //лобавить разлогинивание 
 
-    [ApiController]
+  [ApiController]
   [Route("[controller]")]
   public class UserController : Controller
   {
@@ -38,21 +38,35 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     }
 
     [HttpPost("login")]
-    public async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, ProblemHttpResult>> Login([FromBody] UserLoginRequest login)
+    public async Task<Results<Ok<UserLoginResponse>, ProblemHttpResult>> Login(
+      [FromBody] UserLoginRequest login)
     {
       var useCookieScheme = true;
       var isPersistent = true;
 
-      signInManager.AuthenticationScheme = useCookieScheme ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
+      signInManager.AuthenticationScheme =
+        useCookieScheme ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
 
-      var result = await signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent, lockoutOnFailure: true);
+      var result =
+        await signInManager.PasswordSignInAsync(login.UserName, login.Password, isPersistent, lockoutOnFailure: true);
 
       if (!result.Succeeded)
       {
         return TypedResults.Problem(result.ToString(), statusCode: StatusCodes.Status401Unauthorized);
       }
 
-      return TypedResults.Empty;
+      var user = await userManager.FindByNameAsync(login.UserName);
+      if (user == null)
+      {
+        return TypedResults.Problem("User not found", statusCode: StatusCodes.Status404NotFound);
+      }
+
+      var response = new UserLoginResponse
+      {
+        UserId = user.Id
+      };
+
+      return TypedResults.Ok(response);
     }
 
     [HttpGet("GetAllUsers")]
@@ -60,11 +74,12 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
     {
       if (userManager.Users.Any())
         return Ok(userManager.Users.ToList());
-      
+
       return new EmptyResult();
     }
 
-    public UserController(UserManager<UserEntity> userManager, IUserStore<UserEntity> userStore, SignInManager<UserEntity> signInManager)
+    public UserController(UserManager<UserEntity> userManager, IUserStore<UserEntity> userStore,
+      SignInManager<UserEntity> signInManager)
     {
       this.userManager = userManager;
       this.userStore = userStore;

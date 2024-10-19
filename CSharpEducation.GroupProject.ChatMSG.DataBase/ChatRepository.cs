@@ -91,6 +91,16 @@ namespace CSharpEducation.GroupProject.ChatMSG.DataBase
         .ToListAsync();
     }
 
+    public async Task RemoveUserFromChat(ChatEntity chat, UserEntity user)
+    {
+      if (chat.Users.Contains(user))
+      {
+        chat.Users.Remove(user);
+        _appDbContext.Chats.Update(chat);
+        await _appDbContext.SaveChangesAsync();
+      }
+    }
+
     public ChatRepository(ApplicationDbContext appDbContext)
     {
       _appDbContext = appDbContext;

@@ -64,6 +64,19 @@ namespace CSharpEducation.GroupProject.ChatMSG.Web.Controllers
       return Ok(allUserChats);
     }
 
+    [Authorize]
+    [HttpDelete("RemoveUser/{chatId}/{userId}")]
+    public async Task<IActionResult> RemoveUserFromChat([FromRoute] int chatId, [FromRoute] string userId)
+    {
+      var result = await chatService.RemoveUserFromChatAsync(chatId, userId);
+      if (!result)
+      {
+        return NotFound(new { message = "Chat or user not found" });
+      }
+
+      return NoContent();
+    }
+
     public ChatsController(IChatService service, IMessageService messageService)
     {
       chatService = service;
