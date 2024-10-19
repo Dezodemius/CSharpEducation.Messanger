@@ -125,11 +125,11 @@ function loadUsers() {
 }
 
 const myModal = document.getElementById('myModal')
-const myInput = document.getElementById('myInput')
-
-myModal.addEventListener('shown.bs.modal', () => {
-    myInput.focus()
-})
+// const myInput = document.getElementById('myInput')
+//
+// myModal.addEventListener('shown.bs.modal', () => {
+//     myInput.focus()
+// })
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const selectedUsers = [];
-        document.querySelectorAll('#userList input[type="checkbox"]:checked').forEach(checkbox => {
+        document.querySelectorAll('#userList2 input[type="checkbox"]:checked').forEach(checkbox => {
             selectedUsers.push(checkbox.value);
         });
 
